@@ -1,0 +1,29 @@
+# From: https://github.com/github/gitignore/blob/master/Global/Windows.gitignore
+Thumbs.db
+Desktop.ini
+ 
+# From https://github.com/github/gitignore/blob/master/Global/OSX.gitignore
+.DS_Store
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+
+*.pem
+
+# Other source repository archive directories (protects when importing)
+.hg
+.svn
+CVS
+
+# automatic backup files
+*~.nib
+*.swp
+*~
+*(Autosaved).rtfd/
+Backup[ ]of[ ]*.pages/
+Backup[ ]of[ ]*.key/
+Backup[ ]of[ ]*.numbers/
+
+.sass-cache
+*.tmproj
