@@ -1,0 +1,15 @@
+body {
+  font-family: "Helvetica Neue", HelveticaNeue, Helvetica Neue, Helvetica, Arial, sans-serif;
+}
+
+#msg-list {
+  float:left;
+  background-color: #ccc;
+  width:500px;
+  padding:0.5em;
+}
+
+.msg{
+  margin-top: 0.5em;
+  border-top: 1px solid #aaa;
+}

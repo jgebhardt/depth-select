@@ -1,0 +1,31 @@
+{
+  "name": "TartanTouch Demo",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Demo for interacting with the Synaptics ForcePad",
+  "app": {
+
+    "background": {
+      "scripts": [
+        "lib/jquery.js",
+        "lib/underscore.js",
+        "lib/paperjs/lib/paper.js",
+        "app.js"
+        ]
+    }
+  },
+  "icons": {
+    "128": "icon.png"
+  },
+  "permissions": [
+    "experimental",
+    "unlimited_storage",
+    "notifications",
+    {"socket": [
+      "udp-bind",
+      "udp-send-to"
+
+      ]
+    }
+  ]
+}
