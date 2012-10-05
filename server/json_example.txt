@@ -1,0 +1,10 @@
+JSON format:
+
+{
+"fingercount":"integer_fingerCount",
+"fingers": ["X_val", "Y_val", "F_val"]
+}
+
+JSON example:
+
+{"fc":2, "f":[[x,y,f], [x,y,f]]}
