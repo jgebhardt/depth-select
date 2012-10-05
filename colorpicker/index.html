@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<link rel="stylesheet" href="css/colorpicker.css" type="text/css" />
+    <link rel="stylesheet" media="screen" type="text/css" href="css/layout.css" />
+    <title>ColorPicker - jQuery plugin</title>
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script type="text/javascript" src="js/colorpicker.js"></script>
+    <script type="text/javascript" src="js/eye.js"></script>
+    <script type="text/javascript" src="js/utils.js"></script>
+    <script type="text/javascript" src="js/layout.js?ver=1.0.2"></script>
+    <style type="text/css">p{text-align: left; }</style>
+</head>
+<body>
+	<div style="padding: 40px;">
+		<p>Call it like:<br />
+			<code>setColor(100,100,100);</code>
+		</p>
+		<p>Ranges go from 0-100.	</p>
+	</div>
+
+    <div id="colorpickerHolder" style="width: 356px; height: 176px; position: absolute; top: 50%; left: 50%; margin-left: -178px; margin-top: -88px;"></div>
+    <script type="text/javascript">
+    	$('#colorpickerHolder').ColorPicker({flat: true});
+
+    	var setColor = function(x,y,z) {
+    		var limitRange = function(val) {
+    			if (val>100) { val = 100;}
+    			else if (val<0) { val = 0; }
+    			return val;
+    		}
+    		
+    		var b = 100-limitRange(y);
+    		var s = limitRange(x);
+    		var h = limitRange(z)/100*360;
+
+    		$('#colorpickerHolder').ColorPickerSetColor({h:h,s:s,b:b});	
+    	}
+    	
+    </script>
+
+</body>
+</html>
