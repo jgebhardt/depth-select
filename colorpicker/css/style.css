@@ -1,0 +1,46 @@
+p{text-align: left; }
+#container {
+	margin: 40px auto;
+}
+.colorpickerHolder, .overlay {
+	width: 356px; height: 176px; position: absolute; top: 60%; left: 50%; margin-left: -178px; margin-top: -88px;
+}
+#status {
+	position: absolute;
+	top: 20px;
+	width: 800px;
+	left: 50%;
+	margin-left: -400px;
+}
+#progress {
+	float: right;
+	text-align: right;
+}
+#target, #yours {
+	width: 150px;
+	float: left;
+	text-align: left;
+	margin-right: 20px;
+}
+#target span, #yours span {
+	display: block;
+	width: 100px;
+	height: 100px;
+	float: right;
+}
+#progress p {
+	width: 150px;
+	text-align: right;
+}
+#time {
+	float: right;
+	margin-top: -80px;
+	width: 200px;
+	text-align: right;
+	clear: both;
+}
+#time span {
+	display:block;
+	float: right;
+	width: 35px;
+}
