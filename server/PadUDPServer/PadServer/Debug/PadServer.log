@@ -1,6 +1,8 @@
-﻿Build started 10/5/2012 4:16:04 AM.
-     1>Project "C:\mhci\uist\git\uistsic12\server\PadUDPServer\PadServer\PadServer.vcxproj" on node 2 (build target(s)).
-     1>InitializeBuildStatus:
+﻿Build started 10/5/2012 6:48:18 PM.
+     1>Project "C:\mhci\uist\git\uistsic12\server\PadUDPServer\PadServer\PadServer.vcxproj" on node 2 (rebuild target(s)).
+     1>_PrepareForClean:
+         Deleting file "Debug\PadUDPServer.lastbuildstate".
+       InitializeBuildStatus:
          Creating "Debug\PadUDPServer.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
          c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I"C:\Program Files (x86)\boost\boost_1_51" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp pad_simple_api.cpp
@@ -14,6 +16,7 @@
          Debug\main.obj
          Debug\pad_simple_api.obj
        Manifest:
+         Deleting file "Debug\PadUDPServer.exe.embed.manifest".
          C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"Debug\PadUDPServer.exe.embed.manifest" /manifest Debug\PadUDPServer.exe.intermediate.manifest
          C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /nologo /fo"Debug\PadUDPServer.exe.embed.manifest.res" Debug\PadUDPServer_manifest.rc 
        LinkEmbedManifest:
@@ -24,8 +27,8 @@
        FinalizeBuildStatus:
          Deleting file "Debug\PadUDPServer.unsuccessfulbuild".
          Touching "Debug\PadUDPServer.lastbuildstate".
-     1>Done Building Project "C:\mhci\uist\git\uistsic12\server\PadUDPServer\PadServer\PadServer.vcxproj" (build target(s)).
+     1>Done Building Project "C:\mhci\uist\git\uistsic12\server\PadUDPServer\PadServer\PadServer.vcxproj" (rebuild target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:03.30
+Time Elapsed 00:00:03.46

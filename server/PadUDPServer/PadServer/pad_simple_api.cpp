@@ -52,8 +52,8 @@ long pad_simple_api::init(){
     pDevice->CreatePacket(pPacket);
 
     // Stop the ForcePad reporting to the operating system
-    //pDevice->Acquire(SF_AcquireAll);
-	isAcquired = 0;
+    pDevice->Acquire(SF_AcquireAll);
+	//isAcquired = 0;
 
 	//initialize device properties
 	XLoRim = YLoRim = XHiRim = YHiRim = ZMaximum = 0;
@@ -221,6 +221,7 @@ JSON example:
 string pad_simple_api::jsonData(){
 
 	stringstream strTemp;
+	avgRange = 5;
 
 	if(lFingerCount != 0)
 	{
@@ -230,7 +231,20 @@ string pad_simple_api::jsonData(){
 		do
 		{
 			if(FingerState[i] && SF_FingerPresent)
-				strTemp << "[" << X[i] << "," << Y[i] << "," << F[i] << "]";
+			{
+				if (X[i] > maxX)	
+					maxX = X[i];
+				if (Y[i] > maxY)	
+					maxY = Y[i];
+				if (Z[i] > maxZ)	
+					maxZ = Z[i];
+				if (F[i] > maxF)	
+					maxF = F[i];
+
+				strTemp << "[" << X[i] << "," << Y[i] << "," << F[i] << "," << Z[i] << "," << filteredF[i];
+				strTemp << "]";
+			}
+
 			i++;
 			if(i != lFingerCount)
 			{

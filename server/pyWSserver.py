@@ -21,7 +21,7 @@ class WebSocketsHandler(SocketServer.StreamRequestHandler):
         self.addr = ("127.0.0.1",1338)
         self.clientSock.bind(self.addr)
         self.clientSock.settimeout(0.01)
-        self.read_list = [self.clientSock]
+        self.read_list = [self.clientSock, self.request]
         
         SocketServer.StreamRequestHandler.setup(self)
         print "connection established", self.client_address
@@ -35,18 +35,15 @@ class WebSocketsHandler(SocketServer.StreamRequestHandler):
 
     def handle(self):
         while True:
-            if not self.handshake_done:
-                self.handshake()
-            else:
-                self.read_next_message()
-                print("Accepting data")
-                while True:
-                    rd, wd, ed = select.select(self.read_list, [], [])
-                    for s in rd:
-                        if s is self.clientSock:
-                            data = self.clientSock.recvfrom(1024)
-                            print(data)
-                            self.send_message(self.format_data(data))
+            rd, wd, ed = select.select(self.read_list, [], [])
+            for s in rd:
+                if s is self.clientSock:
+                    data = self.clientSock.recvfrom(1024)
+                    print(data)
+                    self.send_message(self.format_data(data))
+                elif s is self.request and not self.handshake_done:
+                    self.handshake()
+
 
     def read_next_message(self):
         length = ord(self.rfile.read(2)[1]) & 127
@@ -66,10 +63,10 @@ class WebSocketsHandler(SocketServer.StreamRequestHandler):
         if length <= 125:
             self.request.send(chr(length))
         elif length >= 126 and length <= 65535:
-            self.request.send(126)
+            self.request.send(chr(126))
             self.request.send(struct.pack(">H", length))
         else:
-            self.request.send(127)
+            self.request.send(chr(127))
             self.request.send(struct.pack(">Q", length))
         self.request.send(message)
 
@@ -94,5 +91,5 @@ class WebSocketsHandler(SocketServer.StreamRequestHandler):
 if __name__ == "__main__":
     print "Waiting for websocket connections..."
     server = SocketServer.TCPServer(
-        ("localhost", 9999), WebSocketsHandler)
+        ("", 9999), WebSocketsHandler)
     server.serve_forever()

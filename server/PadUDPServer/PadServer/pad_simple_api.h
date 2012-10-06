@@ -49,6 +49,10 @@ public:
     // Per-finger properties X, Y, Z(touch size), F(force), 
     std::vector<long> X, Y, Z, F, FingerState;
     std::vector<double> filteredF;
+	std::vector<long> avgF;
+	long avgRange;
+
+	long maxX, maxY, maxZ, maxF;
 	//Active finger count
 	long lFingerCount;
 
