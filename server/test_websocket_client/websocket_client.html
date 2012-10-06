@@ -4,13 +4,11 @@
 <script>
 $(document).ready(function() {
 
-var ws = new WebSocket("ws://localhost:9002/");
+var ws = new WebSocket("ws://localhost:9999/");
 ws.onopen = function() {
   ws.send("Hello Mr. Server!");
-  alert($('#ta1').val());
 };
 ws.onmessage = function (e) {
-	alert(e.data);
 	$('#ta1').val( $('#ta1').val() + "\n" + e.data);
 };
 ws.onclose = function() { };
