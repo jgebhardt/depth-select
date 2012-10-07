@@ -1,0 +1,36 @@
+
+var path;
+var text;
+
+function doLayout() {
+    if (path) {
+        path.remove();
+        text.remove();
+    }
+    var point = new Point(80, 80);
+    var size = new Size(100, 100);
+    var rectangle = new Rectangle(point, size);
+    var cornerSize = new Size(30, 30);
+    path = new Path.RoundRectangle(rectangle, cornerSize);
+    
+    path.fillColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
+    
+    text = new PointText(new Point(130, 65));
+    text.justification = 'center';
+    text.fillColor = 'black';
+    text.content = 'This is canvas 1';
+    
+    paper.view.draw();
+}
+
+loader.drawing1 = {};
+
+loader.drawing1.layout = function() {
+    doLayout();
+    
+};
+
+$(window).resize(function() {
+    paper = view._scope;
+    doLayout();
+});

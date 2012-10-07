@@ -16,8 +16,7 @@ ws.onopen = function()
 };
 
 ws.onmessage = function (e) {
-	$('#ta1').val( $('#ta1').val() + "\n" + e.data);
-	parse_json($('#ta1').val());
+	parse_json(e.data);
 	draw_on_input();
 };
 
@@ -28,7 +27,6 @@ ws.onclose = function() { };
 
 </head>
 	<body>
-		<textarea id="ta1" name="pseudo_console" rows="10" cols="100">This text gets removed</textarea>
 		<canvas id="c1" width="250" height="250"></canvas>
 	</body>
 </html>

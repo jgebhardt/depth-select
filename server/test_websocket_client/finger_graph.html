@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Load the Paper.js library -->
+<script type="text/javascript" src="js/jquery-1.8.2.js"></script>
+<script type="text/javascript" src="js/paper.js"></script>
+<script type="text/javascript" src="js/fingergraph.js"></script>
+
+<!-- Define inlined PaperScript associate it with myCanvas -->
+<script type="text/paperscript" canvas="c2">
+    var height = 250;
+    var width = 250;
+
+    var area = new Path.Rectangle(0,0,width,height);
+    area.strokeColor = 'black';
+</script>
+
+
+<script type="text/javascript">
+    window.onload = function()
+    {
+        canvas_setup();
+        p1_draw();
+    }
+</script>
+</head>
+<body>
+    <canvas id="c1" width="250" height="250"></canvas>
+</body>
+</html>
