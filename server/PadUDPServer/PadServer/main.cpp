@@ -77,7 +77,7 @@ DWORD WINAPI UDPClientHandler(){
 				string strTemp = app.jsonData();
 				if(strTemp.compare("{\"f\":[]}") != 0)
 				{
-					std::cout << strTemp.c_str() << std::endl;
+					//std::cout << strTemp.c_str() << std::endl;
 					sprintf_s(buffer,strTemp.c_str());
 
 					if(sendto(sConnect, buffer, strlen(buffer), 0, (sockaddr *) &addr, sizeof(addr)) < 0)
