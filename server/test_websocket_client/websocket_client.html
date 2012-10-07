@@ -1,10 +1,12 @@
 <html>
 <head>
 <script type="text/javascript" src="js/jquery-1.8.2.js"></script>
+<script type="text/javascript" src="js/paper.js"></script>
+
 <script>
 $(document).ready(function() {
 
-var ws = new WebSocket("ws://localhost:9999/");
+var ws = new WebSocket("ws://localhost:9002/");
 ws.onopen = function() {
   ws.send("Hello Mr. Server!");
 };
@@ -15,9 +17,10 @@ ws.onclose = function() { };
 
 });
 </script>
-</head>
 
-<body>
-<textarea id="ta1" name="pseudo_console" rows="10" cols="100">This text gets removed</textarea>
-</body>
+</head>
+	<body>
+		<textarea id="ta1" name="pseudo_console" rows="10" cols="100">This text gets removed</textarea>
+		<canvas id="c1" width="250" height="250"></canvas>
+	</body>
 </html>

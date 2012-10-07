@@ -3,6 +3,7 @@
 #include <vector>
 #include <sstream>
 #include <iostream>
+#include <time.h>
 
 #include "com_ptr.h"
 
@@ -35,6 +36,14 @@ public:
 	long init();
 	void disconnect();
 	HRESULT updatePacketData();
+
+	long firstDeviceUpdate;
+	void printDeviceInfo();
+	
+	//Active finger count
+	long lFingerCount;
+	long getFingerCount();
+	
 	std::string csvData();
 	std::string jsonData();
 
@@ -49,12 +58,14 @@ public:
     // Per-finger properties X, Y, Z(touch size), F(force), 
     std::vector<long> X, Y, Z, F, FingerState;
     std::vector<double> filteredF;
-	std::vector<long> avgF;
-	long avgRange;
 
-	long maxX, maxY, maxZ, maxF;
-	//Active finger count
-	long lFingerCount;
+	//finger index count
+	long lFingerIndex;
+	long index_array[5];
+	void indices_loop();
+	long getFingerIndex(int i);
+	time_t prvActivePadTime;
+	
 
 private:
 	LONG lHandle;
