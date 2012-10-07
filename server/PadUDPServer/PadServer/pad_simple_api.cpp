@@ -58,7 +58,13 @@ long pad_simple_api::init(){
 	//initialize device properties
 	XLoRim = YLoRim = XHiRim = YHiRim = ZMaximum = 0;
 	lFingerCount = 0;
+	firstDeviceUpdate = 0;
     cornerForce.resize(4, 0);
+
+	//init index_array
+	lFingerIndex = -1;
+	for(int i=0;i<5;i++)
+		index_array[i] = -1;
 
 	return EXIT_SUCCESS;
 }
@@ -150,6 +156,12 @@ void pad_simple_api::update_device()
         F.resize(lNumMaxReportedFingers, 0);
         FingerState.resize(lNumMaxReportedFingers, 0);
         filteredF.resize(lNumMaxReportedFingers, 0.0);
+
+		if(firstDeviceUpdate == 0)
+		{
+			printDeviceInfo();
+			firstDeviceUpdate = 1;
+		}
     }
 }
 
@@ -172,15 +184,27 @@ HRESULT pad_simple_api::updatePacketData(){
         Z[i] = get_packet_property(i, SP_Z);
         F[i] = get_packet_property(i, SP_ZForce);
         FingerState[i] = get_packet_property(i, SP_FingerState);
+		
 		//counting active fingers
 		if (FingerState[i] & SF_FingerPresent)
 		{
-			++lFingerCount;
+			if(X[i] > 0 && Y[i] > 0)
+			{
+				//std::cout << "DEBUG: " << "X: " << X[i] << " Y: " << Y[i] << std::endl;
+ 				++lFingerCount;
+			}
 		}
 
         filteredF[i] = filteredF[i] * 0.6 + F[i] * 0.4;
     }
     return hr;
+}
+
+void pad_simple_api::printDeviceInfo()
+{
+	std::cout << "Device information: " << std::endl;
+	std::cout << "X Low: " << XLoRim << " X High: " << XHiRim << std::endl;
+	std::cout << "Y Low: " << YLoRim << " Y High: " << YHiRim << std::endl;
 }
 
 string pad_simple_api::csvData(){
@@ -208,39 +232,32 @@ string pad_simple_api::csvData(){
 JSON format:
 
 {
-"fingercount":"integer_fingerCount",
 "fingers": ["X_val", "Y_val", "F_val"]
 }
 
 JSON example:
 
-{"fc":2, "f":[[x,y,f], [x,y,f]]}
+{"f":[[x,y,f], [x,y,f]]}
 
 */
 
-string pad_simple_api::jsonData(){
+/*
+string pad_simple_api::jsonData()
+{
 
 	stringstream strTemp;
 	avgRange = 5;
 
+	strTemp << "{";
 	if(lFingerCount != 0)
 	{
-		strTemp << "{\"fc\":" << lFingerCount << ", ";
+		//strTemp << "\"fc\":" << lFingerCount << ", ";
 		strTemp << "\"f\":[";
 		int i=0;
 		do
 		{
 			if(FingerState[i] && SF_FingerPresent)
 			{
-				if (X[i] > maxX)	
-					maxX = X[i];
-				if (Y[i] > maxY)	
-					maxY = Y[i];
-				if (Z[i] > maxZ)	
-					maxZ = Z[i];
-				if (F[i] > maxF)	
-					maxF = F[i];
-
 				strTemp << "[" << X[i] << "," << Y[i] << "," << F[i] << "," << Z[i] << "," << filteredF[i];
 				strTemp << "]";
 			}
@@ -256,8 +273,87 @@ string pad_simple_api::jsonData(){
 				break;
 			}
 		}while(1);
-		strTemp << "}";
+	
 	}
 
+	strTemp << "}";
 	return strTemp.str();
+}
+*/
+
+
+long pad_simple_api::getFingerCount()
+{
+	int i = 0, fCount = 0;
+
+	do
+	{
+		if(X[i] && Y[i])
+		{
+			fCount++;
+		}
+		i++;
+	}while(i<5);
+
+	return fCount;
+}
+
+string pad_simple_api::jsonData()
+{
+	stringstream strTemp;
+	strTemp << "{\"f\":[";
+
+	int i=0, fCount=getFingerCount();
+
+	indices_loop();
+
+	do
+	{
+		if(X[i] && Y[i])
+		{
+			if(i != 0 && fCount > 1)
+				strTemp << ",";
+			strTemp << "[";
+			strTemp << getFingerIndex(i) << ",";
+			strTemp << X[i] << "," << Y[i] << "," << F[i] << "," << Z[i] << "," << filteredF[i];
+			strTemp << "]";
+		}
+		i++;
+	}while(i<5);
+
+	strTemp << "]}";
+	return strTemp.str();
+}
+
+void pad_simple_api::indices_loop()
+{
+	std::vector<long> gpparray;
+	std::vector<long>::iterator it;
+
+	for(int i=0;i<5;i++)
+	{
+		if(X[i] && Y[i])
+		{
+			gpparray.push_back(get_packet_property(i, SP_FingerIndex));
+		}
+	}
+
+	for(it = gpparray.begin(); it < gpparray.end(); it++)
+	{
+		if(index_array[*it] == -1)
+		{
+			index_array[*it] = ++lFingerIndex;
+		}
+	}
+	
+	for(int i=0;i<5;i++)
+	{
+		if(find(gpparray.begin(), gpparray.end(),i) == gpparray.end())
+			index_array[i] = -1;
+	}
+}
+
+long pad_simple_api::getFingerIndex(int i)
+{
+	return index_array[i];
 }

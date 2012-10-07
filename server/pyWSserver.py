@@ -39,7 +39,7 @@ class WebSocketsHandler(SocketServer.StreamRequestHandler):
             for s in rd:
                 if s is self.clientSock:
                     data = self.clientSock.recvfrom(1024)
-                    print(data)
+                    #print(data)
                     self.send_message(self.format_data(data))
                 elif s is self.request and not self.handshake_done:
                     self.handshake()
@@ -91,5 +91,5 @@ class WebSocketsHandler(SocketServer.StreamRequestHandler):
 if __name__ == "__main__":
     print "Waiting for websocket connections..."
     server = SocketServer.TCPServer(
-        ("", 9999), WebSocketsHandler)
+        ("", 9002), WebSocketsHandler)
     server.serve_forever()

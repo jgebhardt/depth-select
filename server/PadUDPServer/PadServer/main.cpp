@@ -72,20 +72,28 @@ DWORD WINAPI UDPClientHandler(){
 			// Corner Forces ??
 			//printf("Corner forces (grams) [%+3d, %+3d, %+3d, %+3d]\n", app.cornerForce[0], app.cornerForce[1], app.cornerForce[2], app.cornerForce[3]);
 			
-			printf("FingerCount: %d", app.lFingerCount);
 			if(app.lFingerCount != 0)
 			{
 				string strTemp = app.jsonData();
-				printf(strTemp.c_str());
-				sprintf_s(buffer,strTemp.c_str());
-
-				if(sendto(sConnect, buffer, strlen(buffer), 0, (sockaddr *) &addr, sizeof(addr)))
+				if(strTemp.compare("{\"f\":[]}") != 0)
 				{
-					printf("Error sending datagram\n");
-					//closesocket(sConnect);
-					//WSACleanup();
-					//exit(0);
+					//std::cout << strTemp.c_str() << std::endl;
+					sprintf_s(buffer,strTemp.c_str());
+
+					if(sendto(sConnect, buffer, strlen(buffer), 0, (sockaddr *) &addr, sizeof(addr)) < 0)
+					{
+						printf("Error sending datagram\n");
+						//closesocket(sConnect);
+						//WSACleanup();
+						//exit(0);
+					}
 				}
+			}
+			else
+			{
+				// no finger data; clear the index_array
+				for(int i=0;i<5;i++)
+					app.index_array[i] = -1;
 			}
         }
     }
