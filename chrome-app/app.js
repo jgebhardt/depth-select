@@ -3,7 +3,7 @@ chrome.app.runtime.onLaunched.addListener(function() {
     'width': 600,
     'height': 700
   })
-
+  
   var config = {
     //used for input scaling
     valueBounds : {
@@ -22,6 +22,7 @@ chrome.app.runtime.onLaunched.addListener(function() {
     return String.fromCharCode.apply(null, new Uint8Array(buf))
   }
 
+  //JSON format {"fc":2, "f":[[x,y,f], [x,y,f]]}
   function readSock(socket){
     var bufferSize = config.UdpBufferSize
     chrome.socket.recvFrom(socket.socketId, bufferSize, function(received){
@@ -53,10 +54,6 @@ chrome.app.runtime.onLaunched.addListener(function() {
   function onMessageReceived(msg) {
     $('#msg-list').append('<div class="msg">' + msg + '</div>')
   }
-
-
-  $(document).ready(function(){
-  })
 
 
 })

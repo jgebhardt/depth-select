@@ -2093,6 +2093,7 @@ var Item = this.Item = Base.extend({
 	},
 
 	hitTest: function(point, options, matrix) {
+		console.log('pprjs: hitTest')
 		options = HitResult.getOptions(point, options);
 		point = options.point;
 		if (!this._children && !this.getRoughBounds(matrix)

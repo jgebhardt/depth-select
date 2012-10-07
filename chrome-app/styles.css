@@ -1,15 +1,55 @@
 body {
   font-family: "Helvetica Neue", HelveticaNeue, Helvetica Neue, Helvetica, Arial, sans-serif;
+  margin: 0;
+  background-color:#eee;
+}
+
+.wnd {
+  position:absolute;
+  margin:1em;
+  background-color: #fff;
+  width:400px;
+  padding:0.5em;
+  min-height: 200px;
+  box-shadow: 0 2px 3px #666;
+  border-radius: 4px;  
+}
+
+#touchviz {
+  right:0;
+  top:250px;
+  min-height: 300px;
 }
 
 #msg-list {
-  float:left;
-  background-color: #ccc;
-  width:500px;
-  padding:0.5em;
+  right:0;
 }
 
 .msg{
   margin-top: 0.5em;
-  border-top: 1px solid #aaa;
+}
+
+.msg table  {
+  font-family: verdana,arial,sans-serif;
+  font-size:11px;
+  color:#333333;
+  border-width: 1px;
+  border-color: #666666;
+  border-collapse: collapse;
+}
+.msg table th {
+  border-width: 1px;
+  padding: 8px;
+  border-style: solid;
+  border-color: #666666;
+}
+.msg table td {
+  border-width: 1px;
+  padding: 8px;
+  border-style: solid;
+  border-color: #666666;
+}
+
+.workspace {
+  float:left;
 }
