@@ -2093,7 +2093,7 @@ var Item = this.Item = Base.extend({
 	},
 
 	hitTest: function(point, options, matrix) {
-		//console.log('pprjs: hitTest')
+		//console.log('pprjs: hitTest', point, options, matrix, 'delim')
 		var results = []
 		options = HitResult.getOptions(point, options);
 		point = options.point;

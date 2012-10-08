@@ -323,20 +323,36 @@ var currentTouches = []
     var activePath
     var doHitTest = function(pos) {
         var hitOptions = {
-            segments: true,
-            stroke: true,
-            fill: true,
-            tolerance: true
+            //segments: true,
+            //stroke: true,
+            fill: true//,
+            //tolerance: true
         }
 
+        paper.project.activeLayer.selected = false;
+
+        hitResults = []
+        _(paper.project.activeLayer.children).each(function(child){
+            var test = child._hitTest(pos,hitOptions);
+            if(test != null){
+                hitResults.push(test)
+            } 
+        })
+
+        _(hitResults).each(function(hit){
+            if (hit.item) {
+                hit.item.selected = true;
+            }
+        })
+
+        /*
         var hitResult = paper.project.activeLayer.hitTest(pos, hitOptions);
-        
         paper.project.activeLayer.selected = false;
         //if (hitResult != null) console.log('hit:', hitResult)
         if (hitResult && hitResult.item && true ){//hitResult.item.layer != app.cursorLayer) {
             hitResult.item.selected = true;
-            
         }
+        */
     }
 
     /* HELPERS */
