@@ -1,7 +1,7 @@
 var app = { fps: 30, forceFactor: 0.1 }
 
 //draw, select, setcolor
-var mode = 'select' 
+var mode = 'draw' 
 var currentTouches = []
     /* SETUP */
 
@@ -114,17 +114,22 @@ var currentTouches = []
     }
     
     var setupCursor = function() {
+        var previousLayer = paper.project.activeLayer
+        app.cursorLayer = new paper.Layer()
+        app.cursorLayer.activate()
+
         var pos = new paper.Point(0,0)
         var radius = 5
         var bg = new paper.Path.Circle(pos, radius)
         bg.name = 'bg'
-        bg.fillColor = new paper.HsbColor(0,0,0);
+        bg.fillColor = new paper.HsbColor(0,0,0)
         bg.opacity = 0.2
         var dot = new paper.Path.Circle(pos, 1)
-        dot.fillColor = new paper.HsbColor(0,0,0);
+        dot.fillColor = new paper.HsbColor(0,0,0)
         app.cursor = new paper.Group([bg, dot])
         app.cursor.opacity = 0
         app.cursor.scale = 1
+        previousLayer.activate()
     }
 
     var drawCursor = function() {
@@ -327,6 +332,7 @@ var currentTouches = []
 
     /* UI STUFF */
     var setAppMode = function (modestring){
+        app.cursor.opacity = 0
         mode = modestring
         console.log(mode)
         $('.navbar li.active').removeClass('active')
