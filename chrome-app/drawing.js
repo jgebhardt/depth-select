@@ -1,7 +1,7 @@
 var app = { fps: 30, forceFactor: 0.1 }
 
 //draw, select, setcolor
-var mode = 'draw' 
+var mode = 'select' 
 var currentTouches = []
     /* SETUP */
 
@@ -17,6 +17,7 @@ var currentTouches = []
         //l.strokeWidth = 5
         //l.strokeColor = new paper.HsbColor(0,0,0)
         setupSeesaw(0)
+        setupCursor()
         draw()
     }
     
@@ -65,14 +66,10 @@ var currentTouches = []
 
             
         }
-        
-            
-
-
     }   
 
     var setupSeesaw = function(value){
-        var pos = new paper.Point(10,15)
+        var pos = new paper.Point(10,0)
         var size = new paper.Point(200,20)
         var bg = new paper.Path.RoundRectangle(new paper.Rectangle(pos, pos.add(size)), new paper.Size(3, 3))
         bg.fillColor = new paper.HsbColor(0, 0, 0.7)
@@ -115,6 +112,33 @@ var currentTouches = []
     var hideSeesaw = function() {
         app.seesaw.opacity = 0
     }
+    
+    var setupCursor = function() {
+        var pos = new paper.Point(0,0)
+        var radius = 5
+        var bg = new paper.Path.Circle(pos, radius)
+        bg.name = 'bg'
+        bg.fillColor = new paper.HsbColor(0,0,0);
+        bg.opacity = 0.2
+        var dot = new paper.Path.Circle(pos, 1)
+        dot.fillColor = new paper.HsbColor(0,0,0);
+        app.cursor = new paper.Group([bg, dot])
+        app.cursor.opacity = 0
+        app.cursor.scale = 1
+    }
+
+    var drawCursor = function() {
+        if (currentTouches.length > 0){
+            app.cursor.opacity = 1
+            app.cursor.position.setX(currentTouches[0].x)
+            app.cursor.position.setY(currentTouches[0].y)
+            var newscale = 1 + 0.1*currentTouches[0].forceAverage
+            console.log(currentTouches[0].forceAverage)
+            app.cursor.children['bg'].scale(newscale/app.cursor.scale)
+            app.cursor.scale = newscale
+        }        
+    }
+
 
     var draw = function() {
         $('#msg-list .msg').html(printTouches())
@@ -226,15 +250,15 @@ var currentTouches = []
         })
     }
 
-    var stats = {foundz: 0, newz: 0}
-    var scaleForDrawing = function(data) {
+    var scaleInput = function(data) {
         var forceHistorySize = 10
         conversions = {
                 x: {min: 1000, max: 5800, target: app.canvas.width()},
                 y: {min: 1200, max: 4700, target: app.canvas.height()},
                 f: {min: 0, max: 500, target: {low: 1, high:100}},
                 s: {min: 0, max: 100, target: 100},
-                f2: {min: 0, max: 500, target: 100}
+                f2: {min: 0, max: 500, target: 100},
+                maxAvgForce: 250
             }
         _(data.f).each(function(rawtouch){
             var t = {}
@@ -243,12 +267,10 @@ var currentTouches = []
                 t = test
                 t.lastX = t.x
                 t.lastY = t.y
-                stats.foundz++
             } else {
                 t.id = rawtouch[0]
                 t.counter = 0
                 t.forceHistory = []
-                stats.newz++
             }
             //x, y, f: raw force, s: touch size, f2: filtered force
             t.x = (rawtouch[1] - conversions.x.min) / (conversions.x.max - conversions.x.min) * conversions.x.target
@@ -259,7 +281,7 @@ var currentTouches = []
             t.f2 = (Math.max(rawtouch[5],0) - conversions.f2.min) / (conversions.f2.max - conversions.f2.min) * conversions.f2.target
             
             t.forceHistory[t.counter % forceHistorySize] = t.f
-            t.forceAverage = _.reduce(t.forceHistory, function(i, m){return m+i})/forceHistorySize
+            t.forceAverage =  Math.min( _.reduce(t.forceHistory, function(i, m){return m+i})/forceHistorySize, conversions.maxAvgForce)
 
             
 
@@ -303,6 +325,28 @@ var currentTouches = []
                 touch.f2.toFixed(p)
     }
 
+
+    /* UI STUFF */
+    var setAppMode = function (modestring){
+        mode = modestring
+        console.log(mode)
+        $('.navbar li.active').removeClass('active')
+        switch(mode) {
+            case 'draw':  $('#linkModeDraw').addClass('active') ;break;
+            case 'select':  $('#linkModeSelect').addClass('active') ;break;
+        }
+    }
+
+    var toggleVisibility = function(id) {
+        var element = $('#'+id)
+        if (element.css('display') === 'none') {
+            element.show()
+        } else
+        element.hide()
+    }
+
+
+
 $(document).ready(function(){
 
     
@@ -326,21 +370,23 @@ $(document).ready(function(){
     }
     setInterval(msgPerSec, 1000)
 
-    //var ws = new WebSocket("ws://128.237.128.231:9999/")
     var ws = new WebSocket("ws://192.168.56.101:9002/")
     ws.onopen = function() {
         console.log('onOpen')
         ws.send("Hello Mr. Server!")
-        $('#msg-list').append($('<div class="msg">socket opened</div>'))
     }
     ws.onmessage = function (e) {
         //console.log(e.data)
         var data = $.parseJSON(e.data)
-        findBounds(data.f)
+        //findBounds(data.f)
         c_in++
-        scaleForDrawing(data)
+        scaleInput(data)
         removeOldTouches(data.f)
-        drawPathFromTouches()
+        if (mode === 'draw') {
+            drawPathFromTouches()
+        } else {
+            drawCursor()
+        }
     }
     ws.onerror = function() {
         console.log('websocket error: ', ws)

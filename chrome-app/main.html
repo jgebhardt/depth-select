@@ -18,14 +18,13 @@
     <a class="brand" href="#">TartanTouch @ UISTSIC</a>
     <ul class="nav">
       <li class="divider-vertical"></li>
-      <li class="active"><a href="#">draw</a></li>
-      <li><a href="#">select</a></li>
-      <li><a href="#">color</a></li>
+      <li class="active" id="linkModeDraw"><a href="javascript:setAppMode('draw')">draw</a></li>
+      <li id="linkModeSelect"><a href="javascript:setAppMode('select')">select</a></li>
     </ul>
     <ul class="nav pull-right">
-      <li><a href="#">show data</a></li>
+      <li><a href="javascript:toggleVisibility('msg-list')">data</a></li>
       <li class="divider-vertical"></li>
-      <li><a href="#">show viz</a></li>
+      <li><a href="javascript:toggleVisibility('touchviz')">viz</a></li>
     </ul>
   </div>
 </div>
