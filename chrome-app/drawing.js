@@ -1,4 +1,7 @@
-var app = { fps: 30 }
+var app = { fps: 30, forceFactor: 0.1 }
+
+//draw, select, setcolor
+var mode = 'draw' 
 var currentTouches = []
     /* SETUP */
 
@@ -17,60 +20,8 @@ var currentTouches = []
         draw()
     }
     
-    //deprecated
-    /*
-    var setupPaths = function(){
-        app.pathCount = 5 
-        app.paths = []
-        _(app.pathCount).times(function(i){
-           app.paths[i] = new paper.Path()
-           var color = new paper.HsbColor(Math.round(Math.random()*359), 0.9, 0.7)
-           app.paths[i].fillColor = color
-        })        
-    }*/
 
-    var simulateDrawing = function() {
-        currentTouches = [/*{x:0,y:0,f:20,s:0,f2:0},
-        {x:0,y:0,f:40,s:0,f2:0},
-        {x:100,y:40,f:80,s:0,f2:0},
-        {x:740,y:520,f:10,s:0,f2:0},
-        {x:860,y:289,f:90,s:0,f2:0},
-        {x:200,y:590,f:20,s:0,f2:0}*/]
-
-        var points = 
-        [[
-        {x:100,y:100,f:1,s:0,f2:0},
-        {x:200,y:200,f:1,s:0,f2:0},
-        {x:200,y:140,f:2,s:0,f2:0},
-        {x:240,y:120,f:3,s:0,f2:0},
-        {x:360,y:489,f:4,s:0,f2:0},
-        {x:800,y:390,f:10,s:0,f2:0}
-        ]/*,[
-        {x:410,y:10,f:20,s:0,f2:0},
-        {x:250,y:60,f:40,s:0,f2:0},
-        {x:100,y:40,f:80,s:0,f2:0},
-        {x:740,y:520,f:10,s:0,f2:0},
-        {x:860,y:289,f:90,s:0,f2:0},
-        {x:200,y:590,f:20,s:0,f2:0}        
-        ],[
-        {x:800,y:10,f:5,s:0,f2:0},
-        {x:600,y:50,f:5,s:0,f2:0},
-        {x:400,y:100,f:1,s:0,f2:0},
-        {x:300,y:200,f:4,s:0,f2:0},
-        {x:200,y:400,f:2,s:0,f2:0},
-        {x:100,y:600,f:20,s:0,f2:0}        
-        ]*/]
-        i = 0
-        _(points).each(function(layer){
-            _(layer).each(function(touch){
-                drawSegment(i, touch)
-                currentTouches[i] = touch
-            })
-            i++
-        })
-    }
-
-    /* DRAWING STUFF */
+   /* DRAWING STUFF */
 
     var createPath = function() {
         var path = new paper.Path()
@@ -102,7 +53,7 @@ var currentTouches = []
             var middlePoint = newPoint.subtract(step)
             step.angle += 90        
 
-            var factor = 0.5
+            var factor = touch.forceAverage * app.forceFactor
             //console.log(touch.f)
 
             var top = middlePoint.add(step.multiply(factor))
@@ -110,9 +61,9 @@ var currentTouches = []
 
             path.add(top)
             path.insert(0, bottom)
-            //path.smooth()
+            path.smooth()
 
-            //console.log(oldPoint, newPoint, middlePoint, delta, step, top, bottom)
+            
         }
         
             

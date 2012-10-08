@@ -2,21 +2,38 @@
 <html>
   <head>
     <title>TartanTouch Demo</title>
+    <link href="bootstrap/css/bootstrap.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="styles.css" media="screen" rel="stylesheet" type="text/css" />
     <!-- JavaScript and HTML must be in separate files for security. -->
     <script src="lib/jquery.js"></script>
     <script src="lib/jquery-ui.js"></script>
     <script src="lib/underscore.js"></script>
     <script src="lib/paperjs/lib/paper.js"></script>
+    <script src="lib/bootstrap.js"></script>
     <script src="drawing.js"></script>
   </head>
   <body>
-
+    <div class="navbar navbar-invaerse">
+  <div class="navbar-inner">
+    <a class="brand" href="#">TartanTouch @ UISTSIC</a>
+    <ul class="nav">
+      <li class="divider-vertical"></li>
+      <li class="active"><a href="#">draw</a></li>
+      <li><a href="#">select</a></li>
+      <li><a href="#">color</a></li>
+    </ul>
+    <ul class="nav pull-right">
+      <li><a href="#">show data</a></li>
+      <li class="divider-vertical"></li>
+      <li><a href="#">show viz</a></li>
+    </ul>
+  </div>
+</div>
     <div class="workspace">
         <canvas id="mainCanvas" resize></canvas>
     </div>
     <div class="wnd" id="msg-list"><b>Touch values</b></div>
-    <div class="wnd" id="touchviz"><b>Touch Viz</b>
+    <div class="wnd" id="touchviz"><b>Touch Viz</b><br>
       <canvas id="touchVizCanvas"></canvas> </div>
   </body>
 </html>
