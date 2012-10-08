@@ -13,7 +13,7 @@ var currentTouches = []
         //var l = paper.Path.Line(new paper.Point(0, 0), new paper.Point(1200, 1200))
         //l.strokeWidth = 5
         //l.strokeColor = new paper.HsbColor(0,0,0)
-
+        setupSeesaw(0)
         draw()
     }
     
@@ -120,7 +120,7 @@ var currentTouches = []
 
     }   
 
-    var drawSeesaw = function(value){
+    var setupSeesaw = function(value){
         var pos = new paper.Point(10,15)
         var size = new paper.Point(200,20)
         var bg = new paper.Path.RoundRectangle(new paper.Rectangle(pos, pos.add(size)), new paper.Size(3, 3))
@@ -128,17 +128,6 @@ var currentTouches = []
         var margin = 2
         var inner = new paper.Path.Rectangle(pos.add([margin,margin]), pos.add(size).subtract([margin,margin]))
         inner.fillColor = new paper.HsbColor(0, 0, 1)
-        /*
-        var gridlineCount = 11
-        var xOffset = (size.x-2*margin) / gridlineCount
-        for(i = 0; i < gridlineCount; i++) {
-            var pt1 = new paper.Point(pos.x+2*margin + gridlineCount*i, pos.y+2*margin)
-            var pt2 = new paper.Point(pos.x+2*margin + gridlineCount*i, pos.y + size.y - +2*margin)
-
-            var line = new paper.Path.Line(pt1, pt2)
-            line.strokeWidth = 0.5
-            line.strokeColor = new paper.HsbColor(0,0,0.5)
-        }*/
         //baseline
         var b1 = new paper.Point(pos.x+4*margin, pos.y+size.y/2)
         var b2 = new paper.Point(pos.x + size.x - 4*margin, pos.y+size.y/2)
@@ -153,13 +142,61 @@ var currentTouches = []
         var line = new paper.Path.Line(pt1, pt2)
         line.strokeWidth = 2
         line.strokeColor = new paper.HsbColor(0,1,0.7)
+        app.seesaw = new paper.Group([bg, inner, baseline, line])
+        app.seesaw.pivot = line
+        app.seesaw.w = width
+        app.seesaw.pos = pos
+        app.seesaw.sz = size
+        app.seesaw.opacity = 0
+    }
+
+    var drawSeesaw = function(value){
+        app.seesaw.opacity = 1
+        var margin = 2
+        var pivotOffset = (app.seesaw.w/2) * (value+1)
+        var x = app.seesaw.pos.x + pivotOffset+4*margin
+        app.seesaw.pivot.segments[0].point.x = x
+        app.seesaw.pivot.segments[0].point.y = app.seesaw.pos.y+2*margin
+        app.seesaw.pivot.segments[1].point.x = x
+        app.seesaw.pivot.segments[1].point.y = app.seesaw.pos.y+app.seesaw.sz.y - +2*margin
+        //console.log(app.seesaw.pivot)
+
+        /*var pos = new paper.Point(10,15)
+        var size = new paper.Point(200,20)
+        var bg = new paper.Path.RoundRectangle(new paper.Rectangle(pos, pos.add(size)), new paper.Size(3, 3))
+        bg.fillColor = new paper.HsbColor(0, 0, 0.7)
+        var margin = 2
+        var inner = new paper.Path.Rectangle(pos.add([margin,margin]), pos.add(size).subtract([margin,margin]))
+        inner.fillColor = new paper.HsbColor(0, 0, 1)
+        
+        //baseline
+        var b1 = new paper.Point(pos.x+4*margin, pos.y+size.y/2)
+        var b2 = new paper.Point(pos.x + size.x - 4*margin, pos.y+size.y/2)
+        var baseline = new paper.Path.Line(b1, b2)
+        baseline.strokeWidth = 0.5
+        baseline.strokeColor = new paper.HsbColor(0,0,0.5)
+        //pivot indicator
+        var width = (pos.x + size.x - 4*margin) - (pos.x +4*margin)
+        var pivotOffset = (width/2) * (value+1)
+        var pt1 = new paper.Point(pos.x+pivotOffset+4*margin, pos.y+2*margin)
+        var pt2 = new paper.Point(pos.x+pivotOffset+4*margin, pos.y + size.y - +2*margin)
+        var line = new paper.Path.Line(pt1, pt2)
+        line.strokeWidth = 2
+        line.strokeColor = new paper.HsbColor(0,1,0.7)*/
+
+    }
+
+    var hideSeesaw = function() {
+        app.seesaw.opacity = 0
     }
 
     var draw = function() {
         $('#msg-list .msg').html(printTouches())
         if (currentTouches.length >= 2) {
             drawSeesaw(getPressureBalance(currentTouches[0], currentTouches[1]))
-        } 
+        } else {
+            hideSeesaw()
+        }
         paper.view.draw()
     }
 
@@ -212,7 +249,11 @@ var currentTouches = []
 
     //returns -1..1 balance (for 'seesaw' interaction)
     var getPressureBalance = function(touch1, touch2) {
-        var res = 2*touch1.f / (touch1.f + touch2.f) - 1
+        var res = 2*touch1.forceAverage / (touch1.forceAverage + touch2.forceAverage) - 1
+        //switch direction if touch1 is to the right of touch2
+        if (touch2.x - touch1.x > 10) {
+            res *= -1
+        }
         return (res != null) ? res : 0
     } 
 
@@ -269,7 +310,6 @@ var currentTouches = []
         _(data.f).each(function(rawtouch){
             var t = {}
             var test = getCurrentTouchByID(rawtouch[0])
-            console.log(test)
             if (test != null) {
                 t = test
                 t.lastX = t.x
