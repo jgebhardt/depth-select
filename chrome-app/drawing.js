@@ -79,7 +79,7 @@ var currentTouches = []
         return path
     }
 
-    var drawSegment = function(pathIndex, touch) {
+    var drawSegment = function(touch) {
         
         if (touch.path == null) {
             touch.path = new paper.Path()
@@ -159,31 +159,6 @@ var currentTouches = []
         app.seesaw.pivot.segments[0].point.y = app.seesaw.pos.y+2*margin
         app.seesaw.pivot.segments[1].point.x = x
         app.seesaw.pivot.segments[1].point.y = app.seesaw.pos.y+app.seesaw.sz.y - +2*margin
-        //console.log(app.seesaw.pivot)
-
-        /*var pos = new paper.Point(10,15)
-        var size = new paper.Point(200,20)
-        var bg = new paper.Path.RoundRectangle(new paper.Rectangle(pos, pos.add(size)), new paper.Size(3, 3))
-        bg.fillColor = new paper.HsbColor(0, 0, 0.7)
-        var margin = 2
-        var inner = new paper.Path.Rectangle(pos.add([margin,margin]), pos.add(size).subtract([margin,margin]))
-        inner.fillColor = new paper.HsbColor(0, 0, 1)
-        
-        //baseline
-        var b1 = new paper.Point(pos.x+4*margin, pos.y+size.y/2)
-        var b2 = new paper.Point(pos.x + size.x - 4*margin, pos.y+size.y/2)
-        var baseline = new paper.Path.Line(b1, b2)
-        baseline.strokeWidth = 0.5
-        baseline.strokeColor = new paper.HsbColor(0,0,0.5)
-        //pivot indicator
-        var width = (pos.x + size.x - 4*margin) - (pos.x +4*margin)
-        var pivotOffset = (width/2) * (value+1)
-        var pt1 = new paper.Point(pos.x+pivotOffset+4*margin, pos.y+2*margin)
-        var pt2 = new paper.Point(pos.x+pivotOffset+4*margin, pos.y + size.y - +2*margin)
-        var line = new paper.Path.Line(pt1, pt2)
-        line.strokeWidth = 2
-        line.strokeColor = new paper.HsbColor(0,1,0.7)*/
-
     }
 
     var hideSeesaw = function() {
@@ -258,14 +233,17 @@ var currentTouches = []
     } 
 
     var drawPathFromTouches = function(){
-        var i = 0
+        for (i = 0; i < currentTouches.length; i++){
+            drawSegment(currentTouches[i])
+        }
+        /*var i = 0
         _(currentTouches).each(function(touch){
             var prevTouch = currentTouches[i]
             if(prevTouch != null ) {
-                drawSegment(i, new paper.Point(touch.x, touch.y), new paper.Point(prevTouch.x, prevTouch.y))        
+                drawSegment(prevTouch)
             }
             i++
-        })
+        })*/
     }
 
     var getCurrentTouchByID = function(id) {
@@ -289,9 +267,9 @@ var currentTouches = []
                 toBeRemoved.push(touch)
             }
         })
-        if (toBeRemoved.length>0) {
+        /*if (toBeRemoved.length>0) {
             console.log('removing %d old touches', toBeRemoved.length)
-        }
+        }*/
         _(toBeRemoved).each(function(oldTouch){
             currentTouches = _(currentTouches).without(oldTouch)
         })
