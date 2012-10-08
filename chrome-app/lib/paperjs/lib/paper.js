@@ -2094,6 +2094,7 @@ var Item = this.Item = Base.extend({
 
 	hitTest: function(point, options, matrix) {
 		//console.log('pprjs: hitTest')
+		var results = []
 		options = HitResult.getOptions(point, options);
 		point = options.point;
 		if (!this._children && !this.getRoughBounds(matrix)
@@ -2112,26 +2113,31 @@ var Item = this.Item = Base.extend({
 					return new HitResult(type, that,
 							{ name: Base.hyphenate(part), point: pt });
 			}
-			if (options.center && (res = checkBounds('center', 'Center')))
-				return res;
+			if (options.center && (res = checkBounds('center', 'Center'))){
+					return res;
+			}
+				
 			if (options.bounds) {
 				for (var i = 0; i < 8; i++)
-					if (res = checkBounds('bounds', points[i]))
+					if (res = checkBounds('bounds', points[i])) {
 						return res;
+					}
 			}
 		}
-
+		//console.log('return 3')
 		return this._children || !(options.guides && !this._guide
 				|| options.selected && !this._selected)
 					? this._hitTest(point, options, matrix) : null;
 	},
 
 	_hitTest: function(point, options, matrix) {
+		var results = []
 		if (this._children) {
 			for (var i = this._children.length - 1; i >= 0; i--) {
 				var res = this._children[i].hitTest(point, options, matrix);
-				if (res) return res;
+				if (res) return res//results.push(res)
 			}
+			//return results
 		}
 	},
 

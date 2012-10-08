@@ -73,6 +73,10 @@ var currentTouches = []
     }   
 
     var setupSeesaw = function(value){
+        var previousLayer = paper.project.activeLayer
+        app.cursorLayer = new paper.Layer()
+        app.cursorLayer.activate()
+
         var pos = new paper.Point(10,10)
         var size = new paper.Point(200,20)
         var bg = new paper.Path.RoundRectangle(new paper.Rectangle(pos, pos.add(size)), new paper.Size(3, 3))
@@ -100,6 +104,8 @@ var currentTouches = []
         app.seesaw.pos = pos
         app.seesaw.sz = size
         app.seesaw.opacity = 0
+
+        previousLayer.activate()        
     }
 
     var drawSeesaw = function(value){
@@ -119,7 +125,6 @@ var currentTouches = []
     
     var setupCursor = function() {
         var previousLayer = paper.project.activeLayer
-        app.cursorLayer = new paper.Layer()
         app.cursorLayer.activate()
 
         var pos = new paper.Point(0,0)
@@ -136,25 +141,29 @@ var currentTouches = []
         previousLayer.activate()
     }
 
-    var drawCursor = function() {
-        if (currentTouches.length > 0){
+    var drawCursor = function(pos) {
             app.cursor.opacity = 1
-            app.cursor.position.setX(currentTouches[0].x)
-            app.cursor.position.setY(currentTouches[0].y)
+            app.cursor.position.setX(pos.x)
+            app.cursor.position.setY(pos.y)
             var newscale = 1 + 0.1*currentTouches[0].forceAverage
             app.cursor.children['bg'].scale(newscale/app.cursor.scale)
             app.cursor.scale = newscale
-        }        
     }
 
 
     var draw = function() {
         $('#msg-list .msg').html(printTouches())
-        if (currentTouches.length >= 2) {
+        if (mode == 'select' && currentTouches.length >= 2) {
             drawSeesaw(getPressureBalance(currentTouches[0], currentTouches[1]))
         } else {
             hideSeesaw()
         }
+        if (mode == 'select' && currentTouches.length > 0) {
+            var cursorPosition = new paper.Point(currentTouches[0].x, currentTouches[0].y)
+            doHitTest(cursorPosition)
+            drawCursor(cursorPosition)
+        }
+        
         paper.view.draw()
     }
 
@@ -238,6 +247,13 @@ var currentTouches = []
         return null
     }
 
+    var clearAllTouches = function() {
+        _(currentTouches).each(function(touch){
+            if (touch.path != null) touch.path.closePath()
+        })
+        currentTouches = []
+    }
+
     var removeOldTouches = function(data) {
         toBeRemoved = []
         _(currentTouches).each(function(touch){
@@ -247,6 +263,7 @@ var currentTouches = []
                 if (rawtouch[0] === touch.id) { matchcount++ }
             })
             if (matchcount===0) {
+                if (touch.path != null) touch.path.closePath()
                 toBeRemoved.push(touch)
             }
         })
@@ -304,22 +321,21 @@ var currentTouches = []
     }
 
     var activePath
-    var doHitTest = function() {
+    var doHitTest = function(pos) {
         var hitOptions = {
             segments: true,
             stroke: true,
             fill: true,
-            tolerance: 5
+            tolerance: true
         }
 
-        if (currentTouches.length > 0){
-            var pos = new paper.Point(currentTouches[0].x, currentTouches[0].y)
-
-        var hitResult = paper.project.hitTest(pos, hitOptions);
-        //paper.project.activeLayer.selected = false;
-        if (hitResult && hitResult.item)
+        var hitResult = paper.project.activeLayer.hitTest(pos, hitOptions);
+        
+        paper.project.activeLayer.selected = false;
+        //if (hitResult != null) console.log('hit:', hitResult)
+        if (hitResult && hitResult.item && true ){//hitResult.item.layer != app.cursorLayer) {
             hitResult.item.selected = true;
-
+            
         }
     }
 
@@ -356,13 +372,16 @@ var currentTouches = []
 
     /* UI STUFF */
     var setAppMode = function (modestring){
-        app.cursor.opacity = 0
-        mode = modestring
-        console.log(mode)
-        $('.navbar li.active').removeClass('active')
-        switch(mode) {
-            case 'draw':  $('#linkModeDraw').addClass('active') ;break;
-            case 'select':  $('#linkModeSelect').addClass('active') ;break;
+        if (mode != modestring) {
+            app.cursor.opacity = 0
+            mode = modestring
+            console.log(mode)
+            $('.navbar li.active').removeClass('active')
+            switch(mode) {
+                case 'draw':  $('#linkModeDraw').addClass('active') ;break;
+                case 'select':  $('#linkModeSelect').addClass('active'); break;
+            }
+            clearAllTouches()
         }
     }
 
@@ -416,8 +435,12 @@ $(document).ready(function(){
         if (mode === 'draw') {
             drawPathFromTouches()
         } else {
-            drawCursor()
-            doHitTest()
+            if (currentTouches.length > 0){
+                var cursorPosition = new paper.Point(currentTouches[0].x, currentTouches[0].y)
+                
+                //doHitTest(cursorPosition)
+                //drawCursor(cursorPosition)
+            }
         }
     }
     ws.onerror = function() {
