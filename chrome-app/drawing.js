@@ -133,7 +133,6 @@ var currentTouches = []
             app.cursor.position.setX(currentTouches[0].x)
             app.cursor.position.setY(currentTouches[0].y)
             var newscale = 1 + 0.1*currentTouches[0].forceAverage
-            console.log(currentTouches[0].forceAverage)
             app.cursor.children['bg'].scale(newscale/app.cursor.scale)
             app.cursor.scale = newscale
         }        
@@ -357,7 +356,8 @@ $(document).ready(function(){
     
     
     /* non-socket EVENTS */
-    $('#msg-list').draggable({ cursor: "crosshair" });
+    $('.wnd').draggable({ cursor: "crosshair" });
+
 
     
     /* WEBSOCKET STUFF */
@@ -374,6 +374,7 @@ $(document).ready(function(){
     ws.onopen = function() {
         console.log('onOpen')
         ws.send("Hello Mr. Server!")
+        //$('#msg-list').append($(''))
     }
     ws.onmessage = function (e) {
         //console.log(e.data)
