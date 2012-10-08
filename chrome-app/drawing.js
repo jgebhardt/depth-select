@@ -3,6 +3,7 @@ var app = { fps: 30, forceFactor: 0.1 }
 //draw, select, setcolor
 var mode = 'draw' 
 var currentTouches = []
+var lastTouchTime = 0
     /* SETUP */
 
 
@@ -158,10 +159,15 @@ var currentTouches = []
         } else {
             hideSeesaw()
         }
-        if (mode == 'select' && currentTouches.length > 0) {
-            var cursorPosition = new paper.Point(currentTouches[0].x, currentTouches[0].y)
-            doHitTest(cursorPosition)
-            drawCursor(cursorPosition)
+        if (mode == 'select') {
+            if (currentTouches.length > 0){
+                var cursorPosition = new paper.Point(currentTouches[0].x, currentTouches[0].y)
+                doHitTest(cursorPosition)
+                drawCursor(cursorPosition)
+            } 
+            if (new Date().getTime() - lastTouchTime > 200) {
+                hideLayerMenu()
+            }
         }
         
         paper.view.draw()
@@ -361,7 +367,7 @@ var currentTouches = []
 
     var getSelectedIndex = function(itemCount, force, forceThreshold) {
         var sliceSize = (maxSelectForce + 1 - forceThreshold) / itemCount
-        return Math.min(Math.floor((force-forceThreshold) / sliceSize), itemCount)
+        return Math.min(Math.floor((force-forceThreshold) / sliceSize), itemCount-1)
     }
 
     var getSelectionForceGradientCSS = function(percentage){
@@ -399,7 +405,7 @@ var currentTouches = []
                         output += '<li class="active">'
                     } else {
                         output += '<li>'    
-                        if (i < selectedLayerIndex) {
+                        if (i <= selectedLayerIndex) {
                             var layer = hitResults[i]
                             if (layer) {
                                 var before = layer.item.opacity
@@ -415,6 +421,14 @@ var currentTouches = []
                 $('#layerlist').hide()
             }
         }
+    }
+
+    var hideLayerMenu = function (){
+        $('#layerlist').hide()
+        _(paper.project.activeLayer.children).each(function(child){
+            child.opacity = 1
+        })
+        app.cursor.opacity = 0
     }
 
     /* HELPERS */
@@ -510,6 +524,7 @@ $(document).ready(function(){
         c_in++
         scaleInput(data)
         removeOldTouches(data.f)
+        lastTouchTime = new Date().getTime()
         if (mode === 'draw') {
             drawPathFromTouches()
         } else {
