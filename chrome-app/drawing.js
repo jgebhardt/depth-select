@@ -338,13 +338,13 @@ var currentTouches = []
                 hitResults.push(test)
             } 
         })
-        /*
+        
         _(hitResults).each(function(hit){
             if (hit.item) {
-                hit.item.selected = true;
+                hit.item.opacity = 1
             }
         })
-        */
+        
 
         buildLayerList(_(hitResults).reverse())
         /*
@@ -357,11 +357,11 @@ var currentTouches = []
         */
     }
 
-    var maxSelectForce = 150
+    var maxSelectForce = 200
 
-    var getSelectedIndex = function(itemCount, force) {
-        var sliceSize = (maxSelectForce+1) / itemCount
-        return Math.min(Math.floor(force / sliceSize), itemCount)
+    var getSelectedIndex = function(itemCount, force, forceThreshold) {
+        var sliceSize = (maxSelectForce + 1 - forceThreshold) / itemCount
+        return Math.min(Math.floor((force-forceThreshold) / sliceSize), itemCount)
     }
 
     var getSelectionForceGradientCSS = function(percentage){
@@ -388,7 +388,8 @@ var currentTouches = []
             //show layerlist only if multiple layers are present and touch has increased pressure
             if (layerCount > 1 && force >= forceThreshold) {
                 $('#layerlist').show().css('top', currentTouches[0].y).css('left', currentTouches[0].x+50)
-                var selectedLayerIndex = getSelectedIndex(layerCount, force)
+                var selectedLayerIndex = getSelectedIndex(layerCount, force, forceThreshold)
+                //console.log('selected:', selectedLayerIndex)
                 for (i=0; i<layerCount; i++) {
                     if (i ==selectedLayerIndex) {
                         var layer = hitResults[i]
@@ -398,12 +399,18 @@ var currentTouches = []
                         output += '<li class="active">'
                     } else {
                         output += '<li>'    
+                        if (i < selectedLayerIndex) {
+                            var layer = hitResults[i]
+                            if (layer) {
+                                var before = layer.item.opacity
+                                layer.item.opacity = Math.min(1, 1/(i+2)/selectedLayerIndex + 0.10)
+                            }
+                        }
                     }                   
-                    
                     output += 'Layer ' + i + '</li>'
                 }
                 $('#layerlist ul.layers').html(output)
-                $('.vIndicator').css({'background': getSelectionForceGradientCSS(force / maxSelectForce)})
+                $('.vIndicator').css({'background': getSelectionForceGradientCSS((force-forceThreshold) / maxSelectForce)})
             } else {
                 $('#layerlist').hide()
             }
