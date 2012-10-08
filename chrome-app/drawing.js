@@ -338,13 +338,15 @@ var currentTouches = []
                 hitResults.push(test)
             } 
         })
-
+        /*
         _(hitResults).each(function(hit){
             if (hit.item) {
                 hit.item.selected = true;
             }
         })
+        */
 
+        buildLayerList(_(hitResults).reverse())
         /*
         var hitResult = paper.project.activeLayer.hitTest(pos, hitOptions);
         paper.project.activeLayer.selected = false;
@@ -355,9 +357,62 @@ var currentTouches = []
         */
     }
 
+    var maxSelectForce = 150
+
+    var getSelectedIndex = function(itemCount, force) {
+        var sliceSize = (maxSelectForce+1) / itemCount
+        return Math.min(Math.floor(force / sliceSize), itemCount)
+    }
+
+    var getSelectionForceGradientCSS = function(percentage){
+        var output = '-webkit-gradient(' +
+                'linear,' +
+                'left top,' +
+                'left bottom, ' +
+                'color-stop(' + (percentage-0.1) + ', rgb(68,68,68)),' +
+                'color-stop(' + (percentage-0.01) + ', rgb(143,44,53)),' +
+                'color-stop(' + percentage + ', rgb(255,44,53)),' +
+                'color-stop(' + (percentage+0.01) + ', rgb(143,44,53)),' +
+                'color-stop(' + (percentage+0.1) + ', rgb(68,68,68))' +
+            ')'
+        return output
+    }
+
+    var buildLayerList = function(hitResults){
+        if (currentTouches.length > 0){
+            var output = ''
+            var force = currentTouches[0].forceAverage
+            var forceThreshold = 25
+            var layerCount = hitResults.length
+
+            //show layerlist only if multiple layers are present and touch has increased pressure
+            if (layerCount > 1 && force >= forceThreshold) {
+                $('#layerlist').show().css('top', currentTouches[0].y).css('left', currentTouches[0].x+50)
+                var selectedLayerIndex = getSelectedIndex(layerCount, force)
+                for (i=0; i<layerCount; i++) {
+                    if (i ==selectedLayerIndex) {
+                        var layer = hitResults[i]
+                        if (layer) {
+                            layer.item.selected = true
+                        }    
+                        output += '<li class="active">'
+                    } else {
+                        output += '<li>'    
+                    }                   
+                    
+                    output += 'Layer ' + i + '</li>'
+                }
+                $('#layerlist ul.layers').html(output)
+                $('.vIndicator').css({'background': getSelectionForceGradientCSS(force / maxSelectForce)})
+            } else {
+                $('#layerlist').hide()
+            }
+        }
+    }
+
     /* HELPERS */
 
-    //costruct html table string for touch matrix outout
+    //costruct html table string for touch matrix output
     var printTouches = function () {
         var p = 1 //number output precision
         var table = '<table><tr><td>id</td><td>x</td><td>y</td><td>f</td><td>s</td><td>f2</td></tr>'
