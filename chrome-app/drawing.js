@@ -4,6 +4,8 @@ var app = { fps: 30, forceFactor: 0.1 }
 var mode = 'draw' 
 var currentTouches = []
 var lastTouchTime = 0
+var selectedPath = null
+var touchThatSelected = null
     /* SETUP */
 
 
@@ -11,8 +13,11 @@ var lastTouchTime = 0
         app.canvas = $('#mainCanvas')
         paper.setup(app.canvas[0])
         
+        app.mainview = paper.view
+        //app.mainview.activate()
         //app.v1 = paper.
-        //app.v2 = new paper.View('touchVizCanvas')
+        
+        //= app. new paper.View('touchVizCanvas')
         //app.v2.activate()
         //var l = paper.Path.Line(new paper.Point(0, 0), new paper.Point(1200, 1200))
         //l.strokeWidth = 5
@@ -153,6 +158,8 @@ var lastTouchTime = 0
 
 
     var draw = function() {
+            app.mainview.activate()
+
         $('#msg-list .msg').html(printTouches())
         if (mode == 'select' && currentTouches.length >= 2) {
             drawSeesaw(getPressureBalance(currentTouches[0], currentTouches[1]))
@@ -162,7 +169,9 @@ var lastTouchTime = 0
         if (mode == 'select') {
             if (currentTouches.length > 0){
                 var cursorPosition = new paper.Point(currentTouches[0].x, currentTouches[0].y)
-                doHitTest(cursorPosition)
+                if(touchThatSelected == null) {
+                    doHitTest(cursorPosition)
+                }
                 drawCursor(cursorPosition)
             } 
             if (new Date().getTime() - lastTouchTime > 200) {
@@ -270,6 +279,7 @@ var lastTouchTime = 0
             })
             if (matchcount===0) {
                 if (touch.path != null) touch.path.closePath()
+                if (touch.id == touchThatSelected) {touchThatSelected = null}
                 toBeRemoved.push(touch)
             }
         })
@@ -282,6 +292,7 @@ var lastTouchTime = 0
     }
 
     var scaleInput = function(data) {
+        var touchCountBefore = currentTouches.length
         var forceHistorySize = 10
         conversions = {
                 x: {min: 1000, max: 5800, target: app.canvas.width()},
@@ -324,6 +335,11 @@ var lastTouchTime = 0
             }
         })
 
+        if( selectedPath != null && currentTouches.length > touchCountBefore)  {
+            //console.log('pick mode!')
+            //hideLayerMenu()
+            onLayerSelect()
+        }
     }
 
     var activePath
@@ -393,14 +409,17 @@ var lastTouchTime = 0
 
             //show layerlist only if multiple layers are present and touch has increased pressure
             if (layerCount > 1 && force >= forceThreshold) {
+                
                 $('#layerlist').show().css('top', currentTouches[0].y).css('left', currentTouches[0].x+50)
                 var selectedLayerIndex = getSelectedIndex(layerCount, force, forceThreshold)
+                if(hitResults[i]) {selectedPath = hitResults[i].item}
                 //console.log('selected:', selectedLayerIndex)
                 for (i=0; i<layerCount; i++) {
                     if (i ==selectedLayerIndex) {
                         var layer = hitResults[i]
                         if (layer) {
                             layer.item.selected = true
+                            selectedPath = layer.item
                         }    
                         output += '<li class="active">'
                     } else {
@@ -429,6 +448,27 @@ var lastTouchTime = 0
             child.opacity = 1
         })
         app.cursor.opacity = 0
+        selectedPath = null
+    }
+
+    var checkIfSelected = function() {
+        _(currentTouches).each(function(touch){
+            if (touch.id == touchThatSelected) {
+                return true
+            }
+        })
+        return false
+    }
+
+    var onLayerSelect = function(){
+        console.log('selected', selectedPath)
+        hideLayerMenu()
+        touchThatSelected = currentTouches[0].id
+        console.log(touchThatSelected)
+
+        //$('#color-window').show()
+        //var picker = document.getElementById('colorpicker').color.showPicker()
+
     }
 
     /* HELPERS */
@@ -495,10 +535,24 @@ $(document).ready(function(){
     setInterval(draw, 1000/app.fps)
     //simulateDrawing()
     
-    
     /* non-socket EVENTS */
     $('.wnd').draggable({ cursor: "crosshair" });
+    
 
+    /* RAUNAQ TOUCH VIZ*/
+    
+    //app.touchviz = new paper.View('c1')
+    //app.touchviz.activate()
+    
+    //var x = paper.Path.Line(new paper.Point(0,0), new paper.Point(1000,1000))
+    //x.strokeColor = new paper.HsbColor(0,0,0)
+    
+    //canvas_setup()
+    //p1_draw()
+    //parse_json('{"f":[[0,0,0,100,50],[1,20,20,100,40],[2,30,30,100,20],[3,60,60,100,50],[4,100,130,200,100]]}');
+    //draw_on_input();
+
+    //app.mainview.activate()
 
     
     /* WEBSOCKET STUFF */

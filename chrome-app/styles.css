@@ -16,9 +16,12 @@ body {
 }
 
 #touchviz {
+  display: none;
   right:0;
-  top:300px;
-  min-height: 300px;
+  bottom:0px;
+  height: 215px;
+  width:200px;
+  padding:0.5em 1em 1em 1em;
 }
 
 #msg-list {
@@ -54,6 +57,12 @@ body {
   float:left;
   margin-top:-20px;
 }
+
+/* color window */
+#color-window {
+  display: none;
+}
+
 
 /* layer list */
 #layerlist {
