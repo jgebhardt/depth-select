@@ -31,6 +31,10 @@ var currentTouches = []
         return path
     }
 
+    var clearDrawing = function() {
+        paper.project.activeLayer.removeChildren()
+    }
+
     var drawSegment = function(touch) {
         
         if (touch.path == null) {
@@ -69,7 +73,7 @@ var currentTouches = []
     }   
 
     var setupSeesaw = function(value){
-        var pos = new paper.Point(10,0)
+        var pos = new paper.Point(10,10)
         var size = new paper.Point(200,20)
         var bg = new paper.Path.RoundRectangle(new paper.Rectangle(pos, pos.add(size)), new paper.Size(3, 3))
         bg.fillColor = new paper.HsbColor(0, 0, 0.7)
@@ -299,6 +303,26 @@ var currentTouches = []
 
     }
 
+    var activePath
+    var doHitTest = function() {
+        var hitOptions = {
+            segments: true,
+            stroke: true,
+            fill: true,
+            tolerance: 5
+        }
+
+        if (currentTouches.length > 0){
+            var pos = new paper.Point(currentTouches[0].x, currentTouches[0].y)
+
+        var hitResult = paper.project.hitTest(pos, hitOptions);
+        //paper.project.activeLayer.selected = false;
+        if (hitResult && hitResult.item)
+            hitResult.item.selected = true;
+
+        }
+    }
+
     /* HELPERS */
 
     //costruct html table string for touch matrix outout
@@ -393,6 +417,7 @@ $(document).ready(function(){
             drawPathFromTouches()
         } else {
             drawCursor()
+            doHitTest()
         }
     }
     ws.onerror = function() {
