@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Load the Paper.js library -->
+<script type="text/javascript" src="../chrome-app/lib/jquery.js"></script>
+<script type="text/javascript" src="../chrome-app/lib/paperjs/lib/paper.js"></script>
+<script type="text/javascript" src="fingergraph_2.js"></script>
+
+<!-- Define inlined PaperScript associate it with myCanvas -->
+<script type="text/paperscript" canvas="c2">
+    var height = 250;
+    var width = 250;
+
+    var area = new Path.Rectangle(0,0,width,height);
+    area.strokeColor = 'black';
+</script>
+
+
+<script type="text/javascript">
+    window.onload = function()
+    {
+        canvas_setup();
+        p1_draw();
+        parse_json('{"f":[[0,0,0,100,50],[1,20,20,100,40],[2,30,30,100,20],[3,60,60,100,50],[4,100,130,200,100]]}');
+        draw_on_input();
+        //draw_currentForce(ind[0], 50, new paper.Point(100,100));
+        //setTimeout(erase_currentForce, 100);
+    }
+</script>
+</head>
+<body>
+    <canvas id="c1" width="500" height="500"></canvas>
+</body>
+</html>
